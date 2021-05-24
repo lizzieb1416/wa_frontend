@@ -1,8 +1,8 @@
-import React from 'react'
+import React from 'react';
 import './App.css';
 
+
 class App extends React.Component {
-  
   constructor(props){
     super(props);
       this.state = {
@@ -18,14 +18,15 @@ class App extends React.Component {
       this.handleChange = this.handleChange.bind(this)
       this.handleSubmit = this.handleSubmit.bind(this)
       this.getCookie = this.getCookie.bind(this)
+
+
       this.startEdit = this.startEdit.bind(this)
       this.deleteItem = this.deleteItem.bind(this)
       this.strikeUnstrike = this.strikeUnstrike.bind(this)
-  };
 
-  componentWillMount(){
-    this.fetchTasks()
-  }
+      this.saveList = this.saveList.bind(this)
+      this.loadList = this.loadList.bind(this)
+  };
 
   getCookie(name) {
     var cookieValue = null;
@@ -41,26 +42,29 @@ class App extends React.Component {
         }
     }
     return cookieValue;
+}
+
+  componentWillMount(){
+    this.fetchTasks()
   }
 
   fetchTasks(){
     console.log('Fetching...')
-    fetch("http://localhost:5000/tasks")
-    .then(response => response.json())
-    .then(data =>
-        //console.log('Data: ', data.tasks)
-        this.setState({
-          todoList:data.tasks
-        })
 
+    fetch('http://localhost:5000/tasks/')
+    .then(response => response.json())
+    .then(data => 
+      this.setState({
+        todoList:data.tasks
+      })
       )
   }
 
   handleChange(e){
     var name = e.target.name
     var value = e.target.value
-    console.log('Name: ', name)
-    console.log('Value: ', value)
+    console.log('Name:', name)
+    console.log('Value:', value)
 
     this.setState({
       activeItem:{
@@ -72,39 +76,41 @@ class App extends React.Component {
 
   handleSubmit(e){
     e.preventDefault()
-    console.log('ITEM: ', this.state.activeItem)
+    console.log('ITEM:', this.state.activeItem)
 
-    var csrftoken = this.getCookie('csfrtoken')
+    var csrftoken = this.getCookie('csrftoken')
 
-    var url = 'http://127.0.0.1:5000/add'
+    var url = 'http://127.0.0.1:5000/add/'
 
     if(this.state.editing == true){
-      url = `http://127.0.0.1:5000/update/${this.state.activeItem.id}`
+      url = `http://127.0.0.1:5000/update/${ this.state.activeItem.id}/`
       this.setState({
         editing:false
       })
     }
 
 
+
     fetch(url, {
       method:'POST',
       headers:{
         'Content-type':'application/json',
-        'X-CSFRToken':csrftoken,
+        'X-CSRFToken':csrftoken,
       },
       body:JSON.stringify(this.state.activeItem)
-    }).then((response) => {
-      this.fetchTasks()
-      this.setState({
-        activeItem:{
+    }).then((response)  => {
+        this.fetchTasks()
+        this.setState({
+           activeItem:{
           id:null, 
-          description:'',
+          title:'',
           completed:false,
         }
-      })
+        })
     }).catch(function(error){
-      console.log('ERROR: ', error)
+      console.log('ERROR:', error)
     })
+
   }
 
   startEdit(task){
@@ -114,89 +120,151 @@ class App extends React.Component {
     })
   }
 
-  deleteItem(task){
-    var csrftoken = this.getCookie('csfrtoken')
 
-    fetch(`http://127.0.0.1:5000/delete/${task.id}`, {
+  deleteItem(task){
+    var csrftoken = this.getCookie('csrftoken')
+
+    fetch(`http://127.0.0.1:5000/delete/${task.id}/`, {
       method:'DELETE',
       headers:{
         'Content-type':'application/json',
-        'X-CSFRToken':csrftoken,
+        'X-CSRFToken':csrftoken,
       },
-    }).then((response) => {
+    }).then((response) =>{
+
       this.fetchTasks()
     })
   }
 
-  strikeUnstrike(task){
-    task.completed = !task.completed
-    var csrftoken = this.getCookie('csfrtoken')
-    var url = `http://127.0.0.1:5000/update/${task.id}`
 
-    fetch(url, {
-      method:'POST',
-      headers:{
-        'Content-type':'application/json',
-        'X-CSFRToken':csrftoken,
-      },
-      body:JSON.stringify({'completed':task.completed, 'description':task.description})
-    }).then(() => {
-      this.fetchTasks()
-    }) 
+  strikeUnstrike(task){
+
+    task.completed = !task.completed
+    var csrftoken = this.getCookie('csrftoken')
+    var url = `http://127.0.0.1:5000/update/${task.id}/`
+
+      fetch(url, {
+        method:'POST',
+        headers:{
+          'Content-type':'application/json',
+          'X-CSRFToken':csrftoken,
+        },
+        body:JSON.stringify({'completed': task.completed, 'description':task.description})
+      }).then(() => {
+        this.fetchTasks()
+      })
+
+    console.log('TASK:', task.completed)
   }
 
-  render() {
+  saveList(e){
+    console.log("Saving list...")
+    var csrftoken = this.getCookie('csrftoken')
+
+    fetch(`http://127.0.0.1:5000/save/`, {
+      method:'GET',
+      headers:{
+        'Content-type':'application/json',
+        'X-CSRFToken':csrftoken,
+      },
+    }).then((response) =>{
+      this.fetchTasks()
+    })
+  }
+
+  loadList(e){
+
+    if (window.confirm('Are you sure you want to load the ancient to do list?')){
+      console.log("Loading list...")
+      var csrftoken = this.getCookie('csrftoken')
+      
+      fetch(`http://127.0.0.1:5000/load/`, {
+        method:'POST',
+        headers:{
+          'Content-type':'application/json',
+          'X-CSRFToken':csrftoken,
+        },
+      }).then((response) => {
+        this.fetchTasks()
+      })
+    }
+    
+  }
+
+  render(){
     var tasks = this.state.todoList
     var self = this
     return(
-      <div className="container">
-      
-        <div id="task-container">
-        
-          <div id="form-wrapper">
-            <form onSubmit={this.handleSubmit} id="form">
-              <div className="flex-wrapper">
-                <div style={{flex: 6}}>
-                  <input onChange={this.handleChange} className="form-control" id="title" value={this.state.activeItem.description} type="text" name="title" placeholder="Add task" />
-                </div>
-                  
-                <div style={{flex: 1}}>
-                  <input id="submit" className="btn btn-warning" type="submit" name="Add"  />
+        <div className="container">
+
+          <div id="task-container">
+              <div  id="form-wrapper">
+                 <form onSubmit={this.handleSubmit}  id="form">
+                    <div className="flex-wrapper">
+                        <div style={{flex: 6}}>
+                            <input onChange={this.handleChange} className="form-control" id="title" value={this.state.activeItem.title} type="text" name="title" placeholder="Add task.." />
+                         </div>
+
+                         <div style={{flex: 1}}>
+                            <input id="submit" className="btn btn-warning" type="submit" name="Add" />
+                          </div>
+                      </div>
+                </form>
+             
+              </div>
+
+              <div  id="list-wrapper">         
+                    {tasks.map(function(task, index){
+                      return(
+                          <div key={index} className="task-wrapper flex-wrapper">
+
+                            <div onClick={() => self.strikeUnstrike(task)} style={{flex:7}}>
+
+                                {task.completed == false ? (
+                                    <span>{task.description}</span>
+
+                                  ) : (
+
+                                    <strike>{task.description}</strike>
+                                  )}
+  
+                            </div>
+
+                            <div style={{flex:1}}>
+                                <button onClick={() => self.startEdit(task)} className="btn btn-sm btn-outline-info">Edit</button>
+                            </div>
+
+                            <div style={{flex:1}}>
+                                <button onClick={() => self.deleteItem(task)} className="btn btn-sm btn-outline-dark delete">-</button>
+                            </div>
+
+                          </div>
+                        )
+                    })}
+              </div>
+          
+              <div id="save-load-wrapper">
+                <div className="task-wrapper flex-wrapper buttons-wrapper">
+            
+                    <div style={{flex: 1}}>
+                      <button onClick={self.saveList} className="btn btn-info">Save</button>
+                    </div>
+
+                    <div style={{flex: 1}}>
+                      <button onClick={self.loadList} className="btn btn-warning">Load</button>
+                    </div>
+
                 </div>
               </div>
-            </form>
-          </div>
 
-          <div id="list-wrapper">
-              {tasks.map(function(task, index){
-                return(
-                  <div key={index} className="task-wrapper flex-wrapper">
 
-                    <div onClick={() => self.strikeUnstrike(task)} style={{flex:7}}>
-                      {task.completed == false ? (
-                        <span>{task.description}</span>
-                      ) : (
-                        <strike>{task.description}</strike>
-                      )}
-                    </div>
-
-                    <div style={{flex:1}}>
-                      <button onClick={() => self.startEdit(task)} className="btn btn-sm btn-outline-info">Edit</button>
-                    </div>
-
-                    <div style={{flex:1}}>
-                      <button onClick={() => self.deleteItem(task)} className="btn btn-sm btn-outline-dark">-</button>
-                    </div>
-                  
-                  </div>
-                )
-              })}
-          </div>
+            </div>
+         
         </div>
-
-      </div>
-    )
+      )
   }
 }
+
+
 
 export default App;

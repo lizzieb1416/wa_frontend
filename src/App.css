@@ -54,3 +54,7 @@ h1, h2, h3, h4, h5, p, span, strike{
 .task-wrapper:hover{
     background-color: #F0F0F0;
 }
+
+.buttons-wrapper{
+  display: inline-flex;
+}
