@@ -50,8 +50,11 @@ class App extends React.Component {
 
   fetchTasks(){
     console.log('Fetching...')
+    console.log(`${process.env.REACT_APP_PROXY_HOST2}` + 'another')
+    console.log(process.env.REACT_APP_PROXY_HOST2 + 'another')
 
-    fetch('http://localhost:5000/tasks/')
+    //fetch('http://localhost:5000/tasks/')
+    fetch(process.env.REACT_APP_PROXY_HOST + 'tasks/')
     .then(response => response.json())
     .then(data => 
       this.setState({
@@ -80,10 +83,12 @@ class App extends React.Component {
 
     var csrftoken = this.getCookie('csrftoken')
 
-    var url = 'http://127.0.0.1:5000/add/'
+    //var url = 'http://127.0.0.1:5000/add/'
+    var url = process.env.REACT_APP_PROXY_HOST + 'add/'
 
     if(this.state.editing == true){
-      url = `http://127.0.0.1:5000/update/${ this.state.activeItem.id}/`
+      //url = `http://127.0.0.1:5000/update/${ this.state.activeItem.id}/`
+      url = `${process.env.REACT_APP_PROXY_HOST}` + 'update/' + `${ this.state.activeItem.id}/`
       this.setState({
         editing:false
       })
@@ -124,7 +129,8 @@ class App extends React.Component {
   deleteItem(task){
     var csrftoken = this.getCookie('csrftoken')
 
-    fetch(`http://127.0.0.1:5000/delete/${task.id}/`, {
+    //fetch(`http://127.0.0.1:5000/delete/${task.id}/`, {
+    fetch(`${process.env.REACT_APP_PROXY_HOST}` + `delete/` + `${task.id}/`, {
       method:'DELETE',
       headers:{
         'Content-type':'application/json',
@@ -141,7 +147,8 @@ class App extends React.Component {
 
     task.completed = !task.completed
     var csrftoken = this.getCookie('csrftoken')
-    var url = `http://127.0.0.1:5000/update/${task.id}/`
+    var url = `${process.env.REACT_APP_PROXY_HOST}` + `update/` + `${task.id}/`
+    //var url = `http://127.0.0.1:5000/update/${task.id}/`
 
       fetch(url, {
         method:'POST',
@@ -161,7 +168,8 @@ class App extends React.Component {
     console.log("Saving list...")
     var csrftoken = this.getCookie('csrftoken')
 
-    fetch(`http://127.0.0.1:5000/save/`, {
+    //fetch(`http://127.0.0.1:5000/save/`, {
+    fetch(`${process.env.REACT_APP_PROXY_HOST}` + `save/`, {
       method:'GET',
       headers:{
         'Content-type':'application/json',
@@ -178,7 +186,8 @@ class App extends React.Component {
       console.log("Loading list...")
       var csrftoken = this.getCookie('csrftoken')
       
-      fetch(`http://127.0.0.1:5000/load/`, {
+      //fetch(`http://127.0.0.1:5000/load/`, {
+      fetch(`${process.env.REACT_APP_PROXY_HOST}` + `load/`, {
         method:'POST',
         headers:{
           'Content-type':'application/json',
