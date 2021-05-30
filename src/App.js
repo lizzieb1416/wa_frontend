@@ -50,8 +50,8 @@ class App extends React.Component {
 
   fetchTasks(){
     console.log('Fetching...')
-    console.log(`${process.env.REACT_APP_PROXY_HOST2}` + 'another')
-    console.log(process.env.REACT_APP_PROXY_HOST2 + 'another')
+    console.log(`${process.env.REACT_APP_PROXY_HOST}` + 'another')
+    console.log(process.env.REACT_APP_PROXY_HOST + 'another')
 
     //fetch('http://localhost:5000/tasks/')
     fetch(process.env.REACT_APP_PROXY_HOST + 'tasks/')
