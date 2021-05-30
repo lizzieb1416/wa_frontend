@@ -18,7 +18,7 @@ copy the <link /> from CSS and paste it in public > index.html
 It is possible to find a problem with npm when trying to start the project, this is maybe due to the repository 
 being a submodule.
 
-- npm update 
+- npm intall 
 - npm start
 
 ## ENVIRONMENT VARIABLES IN REACT 
