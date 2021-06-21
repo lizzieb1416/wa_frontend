@@ -50,11 +50,12 @@ class App extends React.Component {
 
   fetchTasks(){
     console.log('Fetching...')
-    console.log(`${process.env.REACT_APP_PROXY_HOST}` + 'another')
-    console.log(process.env.REACT_APP_PROXY_HOST + 'another')
+    console.log(`${window._env_.API_URL}` + 'another')
+    console.log(window._env_.API_URL + 'another')
+    console.log("VAR ENV : " + window._env_.API_URL)
 
     //fetch('http://localhost:5000/tasks/')
-    fetch(process.env.REACT_APP_PROXY_HOST + 'tasks/')
+    fetch(window._env_.API_URL + 'tasks/')
     .then(response => response.json())
     .then(data => 
       this.setState({
@@ -84,11 +85,11 @@ class App extends React.Component {
     var csrftoken = this.getCookie('csrftoken')
 
     //var url = 'http://127.0.0.1:5000/add/'
-    var url = process.env.REACT_APP_PROXY_HOST + 'add/'
+    var url = window._env_.API_URL + 'add/'
 
     if(this.state.editing == true){
       //url = `http://127.0.0.1:5000/update/${ this.state.activeItem.id}/`
-      url = `${process.env.REACT_APP_PROXY_HOST}` + 'update/' + `${ this.state.activeItem.id}/`
+      url = `${window._env_.API_URL}` + 'update/' + `${ this.state.activeItem.id}/`
       this.setState({
         editing:false
       })
@@ -130,7 +131,7 @@ class App extends React.Component {
     var csrftoken = this.getCookie('csrftoken')
 
     //fetch(`http://127.0.0.1:5000/delete/${task.id}/`, {
-    fetch(`${process.env.REACT_APP_PROXY_HOST}` + `delete/` + `${task.id}/`, {
+    fetch(`${window._env_.API_URL}` + `delete/` + `${task.id}/`, {
       method:'DELETE',
       headers:{
         'Content-type':'application/json',
@@ -147,7 +148,7 @@ class App extends React.Component {
 
     task.completed = !task.completed
     var csrftoken = this.getCookie('csrftoken')
-    var url = `${process.env.REACT_APP_PROXY_HOST}` + `update/` + `${task.id}/`
+    var url = `${window._env_.API_URL}` + `update/` + `${task.id}/`
     //var url = `http://127.0.0.1:5000/update/${task.id}/`
 
       fetch(url, {
@@ -169,7 +170,7 @@ class App extends React.Component {
     var csrftoken = this.getCookie('csrftoken')
 
     //fetch(`http://127.0.0.1:5000/save/`, {
-    fetch(`${process.env.REACT_APP_PROXY_HOST}` + `save/`, {
+    fetch(`${window._env_.API_URL}` + `save/`, {
       method:'GET',
       headers:{
         'Content-type':'application/json',
@@ -187,7 +188,7 @@ class App extends React.Component {
       var csrftoken = this.getCookie('csrftoken')
       
       //fetch(`http://127.0.0.1:5000/load/`, {
-      fetch(`${process.env.REACT_APP_PROXY_HOST}` + `load/`, {
+      fetch(`${window._env_.API_URL}` + `load/`, {
         method:'POST',
         headers:{
           'Content-type':'application/json',
@@ -205,7 +206,6 @@ class App extends React.Component {
     var self = this
     return(
         <div className="container">
-
           <div id="task-container">
               <div  id="form-wrapper">
                  <form onSubmit={this.handleSubmit}  id="form">
